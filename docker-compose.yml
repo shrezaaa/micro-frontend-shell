@@ -1,8 +1,6 @@
-version: "3.8"
-
 services:
   traefik:
-    image: traefik:v1.7.34-alpine
+    image: traefik:v2.10
     command:
       - "--api.insecure=true"
       - "--providers.docker=false"
@@ -11,7 +9,7 @@ services:
       - "--providers.file.watch=true"
     ports:
       - "8082:80"
-      - "8080:8080"
+      - "8090:8080"
     volumes:
       - ./traefik.yml:/traefik/traefik.yml
     extra_hosts:

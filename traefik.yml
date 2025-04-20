@@ -5,10 +5,10 @@ http:
       service: shell
     angular-app:
       rule: "PathPrefix(`/angular-app`)"
-      service: angularApp
+      service: angular-app
     react-app:
       rule: "PathPrefix(`/react-app`)"
-      service: reactApp
+      service: react-app
 
   services:
     shell:
