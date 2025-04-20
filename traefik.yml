@@ -1,0 +1,25 @@
+http:
+  routers:
+    shell:
+      rule: "PathPrefix(`/shell`)"
+      service: shell
+    angular-app:
+      rule: "PathPrefix(`/angular-app`)"
+      service: angular-app
+    react-app:
+      rule: "PathPrefix(`/react-app`)"
+      service: react-app
+
+  services:
+    shell:
+      loadBalancer:
+        servers:
+          - url: "http://host.docker.internal:5000"
+    angular-app:
+      loadBalancer:
+        servers:
+          - url: "http://host.docker.internal:5001"
+    react-app:
+      loadBalancer:
+        servers:
+          - url: "http://host.docker.internal:5002"

@@ -8,13 +8,14 @@ export default defineConfig(() => ({
   root: __dirname,
   cacheDir: '../../node_modules/.vite/apps/react-app',
   server: {
-    port: 4200,
-    host: 'localhost',
+    port: 5002,
+    host: '0.0.0.0',
   },
   preview: {
-    port: 4300,
-    host: 'localhost',
+    port: 5002,
+    host: '0.0.0.0',
   },
+  base: '/react-app/',
   plugins: [react(), nxViteTsPaths(), nxCopyAssetsPlugin(['*.md'])],
   // Uncomment this if you are using workers.
   // worker: {
