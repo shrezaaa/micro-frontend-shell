@@ -1,2 +1,41 @@
-<app-nx-welcome></app-nx-welcome>
-<router-outlet></router-outlet>
+<div
+  style="
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    font-family: Arial, sans-serif;
+  "
+>
+  <header
+    style="
+      padding: 10px;
+      background-color: #f5f5f5;
+      border-bottom: 1px solid #ddd;
+    "
+  >
+    <h3 style="margin: 0">Micro Frontend Shell</h3>
+  </header>
+
+  <main style="flex-grow: 1; overflow: hidden">
+    <iframe
+      src="/angular-app/"
+      style="width: 100%; height: 50%; border: none"
+    ></iframe>
+    <hr />
+    <iframe src="/react-app/" style="width: 100%; height: 50%; border: none">
+    </iframe>
+  </main>
+
+  <footer
+    style="
+      padding: 10px;
+      background-color: #f5f5f5;
+      border-top: 1px solid #ddd;
+      text-align: center;
+    "
+  >
+    <small>Shell © 2025</small>
+  </footer>
+
+  <router-outlet></router-outlet>
+</div>
