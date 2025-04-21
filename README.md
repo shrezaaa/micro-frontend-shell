@@ -1,101 +1,158 @@
-# MicroFrontendShell
+# Micro Frontend Shell with Traefik and Docker
 
-<a alt="Nx logo" href="https://nx.dev" target="_blank" rel="noreferrer"><img src="https://raw.githubusercontent.com/nrwl/nx/master/images/nx-logo.png" width="45"></a>
+This repository contains a micro frontend shell application that integrates Angular, React, and Vue applications using `iframe`s. The routing is managed using Traefik, and the apps are served locally on different ports.
 
-✨ Your new, shiny [Nx workspace](https://nx.dev) is ready ✨.
+## Table of Contents
+- [Architecture](#architecture)
+- [Tech Stack](#tech-stack)
+- [Setup](#setup)
+- [Folder Structure](#folder-structure)
+- [Running the Project](#running-the-project)
+- [Traefik Configuration](#traefik-configuration)
+- [Shell UI](#shell-ui)
+- [Known Limitations](#known-limitations)
+- [Future Improvements](#future-improvements)
 
-[Learn more about this workspace setup and its capabilities](https://nx.dev/getting-started/tutorials/angular-monorepo-tutorial?utm_source=nx_project&amp;utm_medium=readme&amp;utm_campaign=nx_projects) or run `npx nx graph` to visually explore what was created. Now, let's get you up to speed!
+---
 
-## Run tasks
-
-To run the dev server for your app, use:
-
-```sh
-npx nx serve shell
+## Architecture
+```
+┌─────────────┐       ┌────────────┐
+│  Shell App  │──────▶ Angular App│
+│ (iframe UI) │──────▶ React App  │
+│             │──────▶ Vue App    │
+└─────────────┘       └────────────┘
+         │
+         ▼
+   Traefik Proxy (on port 8082)
 ```
 
-To create a production bundle:
+Each app runs on its own port:
+- Shell: `5000`
+- Angular: `5001`
+- React: `5002`
+- Vue: `5003`
 
-```sh
-npx nx build shell
+Traefik is configured to route `/shell`, `/angular-app`, `/react-app`, and `/vue-app` to their respective services.
+
+## Tech Stack
+- Angular (Shell + App)
+- React (Vite + Nx)
+- Vue (Vite + Nx)
+- Traefik (v1.7.34-alpine)
+- Docker Compose
+
+## Setup
+### Prerequisites
+- Node.js (LTS recommended)
+- Docker & Docker Compose
+- Nx CLI (optional)
+
+### Install Dependencies
+```bash
+npm install
 ```
 
-To see all available targets to run for a project, run:
-
-```sh
-npx nx show project shell
+### Start Each App Individually
+From your Nx workspace:
+```bash
+nx serve shell
+nx serve angular-app
+nx serve react-app
+nx serve vue-app
 ```
 
-These targets are either [inferred automatically](https://nx.dev/concepts/inferred-tasks?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) or defined in the `project.json` or `package.json` files.
+### Start Traefik
+```bash
+docker-compose up
+```
+Traefik dashboard: [http://localhost:8080](http://localhost:8080)  
+Shell app: [http://localhost:8082/shell](http://localhost:8082/shell)
 
-[More about running tasks in the docs &raquo;](https://nx.dev/features/run-tasks?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-
-## Add new projects
-
-While you could add new projects to your workspace manually, you might want to leverage [Nx plugins](https://nx.dev/concepts/nx-plugins?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) and their [code generation](https://nx.dev/features/generate-code?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) feature.
-
-Use the plugin's generator to create new projects.
-
-To generate a new application, use:
-
-```sh
-npx nx g @nx/angular:app demo
+## Folder Structure
+```
+/apps
+  /shell
+  /angular-app
+  /react-app
+  /vue-app
+/docker-compose.yml
+/traefik.yml
 ```
 
-To generate a new library, use:
+## Running the Project
+1. Run all apps individually using Nx.
+2. Start Docker Compose to bring up Traefik:
+   ```bash
+   docker-compose up
+   ```
+3. Visit `http://localhost:8082/shell` to use the shell and navigate to different apps.
 
-```sh
-npx nx g @nx/angular:lib mylib
+## Traefik Configuration
+### docker-compose.yml
+```yaml
+services:
+  traefik:
+    image: traefik:v1.7.34-alpine
+    ports:
+      - "8082:80"
+      - "8090:8080"
+    volumes:
+      - ./traefik.yml:/traefik/traefik.yml
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
 ```
 
-You can use `npx nx list` to get a list of installed plugins. Then, run `npx nx list <plugin-name>` to learn about more specific capabilities of a particular plugin. Alternatively, [install Nx Console](https://nx.dev/getting-started/editor-setup?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) to browse plugins and generators in your IDE.
+### traefik.yml
+```yaml
+http:
+  routers:
+    shell:
+      rule: "PathPrefix(`/shell`)"
+      service: shell
+    angular-app:
+      rule: "PathPrefix(`/angular-app`)"
+      service: angular-app
+    react-app:
+      rule: "PathPrefix(`/react-app`)"
+      service: react-app   
+    vue-app:
+      rule: "PathPrefix(`/vue-app`)"
+      service: vue-app
 
-[Learn more about Nx plugins &raquo;](https://nx.dev/concepts/nx-plugins?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) | [Browse the plugin registry &raquo;](https://nx.dev/plugin-registry?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-
-## Set up CI!
-
-### Step 1
-
-To connect to Nx Cloud, run the following command:
-
-```sh
-npx nx connect
+  services:
+    shell:
+      loadBalancer:
+        servers:
+          - url: "http://host.docker.internal:5000"
+    angular-app:
+      loadBalancer:
+        servers:
+          - url: "http://host.docker.internal:5001"
+    react-app:
+      loadBalancer:
+        servers:
+          - url: "http://host.docker.internal:5002"
+    vue-app:
+      loadBalancer:
+        servers:
+          - url: "http://host.docker.internal:5003"
 ```
 
-Connecting to Nx Cloud ensures a [fast and scalable CI](https://nx.dev/ci/intro/why-nx-cloud?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) pipeline. It includes features such as:
+## Shell UI
+Each page only loads one iframe
 
-- [Remote caching](https://nx.dev/ci/features/remote-cache?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-- [Task distribution across multiple machines](https://nx.dev/ci/features/distribute-task-execution?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-- [Automated e2e test splitting](https://nx.dev/ci/features/split-e2e-tasks?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-- [Task flakiness detection and rerunning](https://nx.dev/ci/features/flaky-tasks?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
+## Known Limitations
+- Route synchronization between shell and micro apps is not implemented.
+- SEO and SSR are not fully supported in iframe-based setup.
 
-### Step 2
+## Future Improvements
+- 🔄 Implement route sync using `postMessage` API between iframe and shell.
+- 🛡️ Auth token passing securely to child apps.
+- 📱 Responsive design.
+- 🧪 Add integration tests.
 
-Use the following command to configure a CI workflow for your workspace:
+---
 
-```sh
-npx nx g ci-workflow
-```
+Feel free to fork and build upon this template!
 
-[Learn more about Nx on CI](https://nx.dev/ci/intro/ci-with-nx#ready-get-started-with-your-provider?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-
-## Install Nx Console
-
-Nx Console is an editor extension that enriches your developer experience. It lets you run tasks, generate code, and improves code autocompletion in your IDE. It is available for VSCode and IntelliJ.
-
-[Install Nx Console &raquo;](https://nx.dev/getting-started/editor-setup?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-
-## Useful links
-
-Learn more:
-
-- [Learn more about this workspace setup](https://nx.dev/getting-started/tutorials/angular-monorepo-tutorial?utm_source=nx_project&amp;utm_medium=readme&amp;utm_campaign=nx_projects)
-- [Learn about Nx on CI](https://nx.dev/ci/intro/ci-with-nx?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-- [Releasing Packages with Nx release](https://nx.dev/features/manage-releases?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-- [What are Nx plugins?](https://nx.dev/concepts/nx-plugins?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-
-And join the Nx community:
-- [Discord](https://go.nx.dev/community)
-- [Follow us on X](https://twitter.com/nxdevtools) or [LinkedIn](https://www.linkedin.com/company/nrwl)
-- [Our Youtube channel](https://www.youtube.com/@nxdevtools)
-- [Our blog](https://nx.dev/blog?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
