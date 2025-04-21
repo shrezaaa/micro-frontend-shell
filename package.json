@@ -2,7 +2,9 @@
   "name": "@micro-frontend-shell/source",
   "version": "0.0.0",
   "license": "MIT",
-  "scripts": {},
+  "scripts": {
+    "apps": "nx run-many --target=serve --all"
+  },
   "private": true,
   "dependencies": {
     "@angular/common": "~19.2.0",
