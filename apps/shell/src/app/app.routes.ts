@@ -16,4 +16,11 @@ export const appRoutes: Route[] = [
       appPath: /react-app/,
     },
   },
+  {
+    path: 'vue-app',
+    component: AppLoaderComponent,
+    data: {
+      appPath: /vue-app/,
+    },
+  },
 ];
