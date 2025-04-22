@@ -139,9 +139,6 @@ http:
           - url: "http://host.docker.internal:5003"
 ```
 
-## Shell UI
-Each page only loads one iframe
-
 ## Known Limitations
 - Route synchronization between shell and micro apps is not implemented.
 - SEO and SSR are not fully supported in iframe-based setup.
