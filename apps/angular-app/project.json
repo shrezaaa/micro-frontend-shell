@@ -11,7 +11,7 @@
       "outputs": ["{options.outputPath}"],
       "options": {
         "baseHref": "/angular-app/",
-        "outputPath": "dist/angular-app",
+        "outputPath": "dist/apps/angular-app",
         "index": "apps/angular-app/src/index.html",
         "browser": "apps/angular-app/src/main.ts",
         "polyfills": ["zone.js"],
