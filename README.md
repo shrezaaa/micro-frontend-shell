@@ -36,8 +36,8 @@ This repository contains a micro frontend shell architecture integrating Angular
 
 Each app can run in one of two modes:
 
-- **Serve mode**: Gateway proxies requests to local development servers (e.g., `localhost:5000`).
-- **Static mode**: Gateway serves built static files from `dist/[appName]/browser`.
+- **Serve mode**: Gateway proxies requests to local development servers (e.g., `localhost:500X`).
+- **Static mode**: Gateway serves built static files from `dist/[appName]`.
 
 Modes are controlled via `apps/gateway/mode-config.json`:
 
@@ -101,7 +101,7 @@ nx build vue-app
     mode-config.json
     Dockerfile
     main.ts
-/docker-compose.yml
+/docker compose.yml
 /traefik.yml
 ```
 
@@ -121,7 +121,7 @@ nx build vue-app
    ```
 3. Start Traefik + Gateway:
    ```bash
-   docker-compose up
+   docker compose up
    ```
 4. Browse to [http://localhost:8082/shell](http://localhost:8082/shell).
 
@@ -131,7 +131,7 @@ nx build vue-app
 2. Set apps to `"static"` in `mode-config.json`.
 3. Start Traefik + Gateway:
    ```bash
-   docker-compose up
+   docker compose up
    ```
 4. Browse to [http://localhost:8082/shell](http://localhost:8082/shell).
 
@@ -142,7 +142,7 @@ nx build vue-app
 The **Gateway** (Express.js) reads `mode-config.json` and for each route:
 
 - **Serve mode**: Proxies to `http://host.docker.internal:500X`.
-- **Static mode**: Serves files from `dist/[appName]/browser`, with SPA fallback.
+- **Static mode**: Serves files from `dist/[appName]`, with SPA fallback.
 
 Example `apps/gateway/mode-config.json`:
 
@@ -159,7 +159,7 @@ Example `apps/gateway/mode-config.json`:
 
 ## Traefik Configuration
 
-### docker-compose.yml
+### docker compose.yml
 
 ```yaml
 version: '3.8'
