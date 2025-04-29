@@ -1,0 +1,16 @@
+**
+
+!package.json
+!package-lock.json
+!nx.json
+!tsconfig.base.json
+!workspace.json
+!project.json
+!tsconfig.json
+
+!apps/gateway/**
+!libs/**
+
+<!-- node_modules/ -->
+
+<!-- dist/ -->

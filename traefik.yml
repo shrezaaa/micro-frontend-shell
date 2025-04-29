@@ -30,3 +30,24 @@ http:
       loadBalancer:
         servers:
           - url: "http://host.docker.internal:5003"
+
+
+# traefik.yml
+# http:
+#   routers:
+#     gateway:
+#       rule: |
+#         PathPrefix(`/`) ||
+#         PathPrefix(`/shell`) ||
+#         PathPrefix(`/angular-app`) ||
+#         PathPrefix(`/react-app`) ||
+#         PathPrefix(`/vue-app`)
+#       service: gateway
+#       entryPoints:
+#         - web
+
+#   services:
+#     gateway:
+#       loadBalancer:
+#         servers:
+#           - url: "http://gateway:9000"
