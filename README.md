@@ -1,155 +1,229 @@
-# Micro Frontend Shell with Traefik and Docker
+# Micro Frontend Shell with Traefik, Gateway, and Docker
 
-This repository contains a micro frontend shell application that integrates Angular, React, and Vue applications using `iframe`s. The routing is managed using Traefik, and the apps are served locally on different ports.
+This repository contains a micro frontend shell architecture integrating Angular, React, and Vue applications using **iframes**. Routing is centralized through a custom **Gateway** app, which decides whether to serve static builds or proxy to local dev servers. **Traefik v2** is used for routing incoming traffic to the gateway.
+
+---
 
 ## Table of Contents
+
 - [Architecture](#architecture)
 - [Tech Stack](#tech-stack)
 - [Setup](#setup)
 - [Folder Structure](#folder-structure)
 - [Running the Project](#running-the-project)
+- [Gateway Configuration](#gateway-configuration)
 - [Traefik Configuration](#traefik-configuration)
-- [Shell UI](#shell-ui)
 - [Known Limitations](#known-limitations)
 - [Future Improvements](#future-improvements)
 
 ---
 
 ## Architecture
+
 ```
-┌─────────────┐       ┌────────────┐
-│  Shell App  │──────▶ Angular App│
-│ (iframe UI) │──────▶ React App  │
-│             │──────▶ Vue App    │
-└─────────────┘       └────────────┘
-         │
-         ▼
-   Traefik Proxy (on port 8082)
+┌───────────────┐
+│   Traefik     │
+│  (port 8082)  │
+└──────┬────────┘
+       │
+       ▼
+ ┌───────────────┐        ┌────────────────┐
+ │   Gateway     │───────▶ shell (dev or static)
+ │  (port 9000)  │───────▶ angular-app
+ └───────────────┘───────▶ react-app
+                         └▶ vue-app
 ```
 
-Each app runs on its own port:
-- Shell: `5000`
-- Angular: `5001`
-- React: `5002`
-- Vue: `5003`
+Each app can run in one of two modes:
 
-Traefik is configured to route `/shell`, `/angular-app`, `/react-app`, and `/vue-app` to their respective services.
+- **Serve mode**: Gateway proxies requests to local development servers (e.g., `localhost:5000`).
+- **Static mode**: Gateway serves built static files from `dist/[appName]/browser`.
+
+Modes are controlled via `apps/gateway/mode-config.json`:
+
+```json
+{
+  "shell": "serve",
+  "angular-app": "serve",
+  "react-app": "serve",
+  "vue-app": "serve"
+}
+```
+
+---
 
 ## Tech Stack
-- Angular (Shell + App)
-- React (Vite + Nx)
-- Vue (Vite + Nx)
-- Traefik (v1.7.34-alpine)
-- Docker Compose
+
+- **Angular** (Shell + App)
+- **React** (Vite + Nx)
+- **Vue** (Vite + Nx)
+- **Express.js** (Gateway)
+- **Traefik v2** (Reverse proxy)
+- **Docker & Docker Compose**
+- **Nx Monorepo**
+
+---
 
 ## Setup
+
 ### Prerequisites
-- Node.js (LTS recommended)
+
+- Node.js (LTS)
 - Docker & Docker Compose
 - Nx CLI (optional)
 
 ### Install Dependencies
+
 ```bash
 npm install
 ```
 
-### Start Each App Individually
-From your Nx workspace:
+### Build Micro Apps (for Static Mode)
+
 ```bash
-nx serve shell
-nx serve angular-app
-nx serve react-app
-nx serve vue-app
+nx build shell
+nx build angular-app
+nx build react-app
+nx build vue-app
 ```
 
-### Start Traefik
-```bash
-docker-compose up
-```
-Traefik dashboard: [http://localhost:8080](http://localhost:8080)  
-Shell app: [http://localhost:8082/shell](http://localhost:8082/shell)
+---
 
 ## Folder Structure
+
 ```
 /apps
   /shell
   /angular-app
   /react-app
   /vue-app
+  /gateway
+    mode-config.json
+    Dockerfile
+    main.ts
 /docker-compose.yml
 /traefik.yml
 ```
 
+---
+
 ## Running the Project
-1. Run all apps individually using Nx.
-2. Start Docker Compose to bring up Traefik:
+
+### Development Mode (Proxy Mode)
+
+1. Ensure `mode-config.json` has apps set to `"serve"`.
+2. Run apps locally:
+   ```bash
+   nx serve shell
+   nx serve angular-app
+   nx serve react-app
+   nx serve vue-app
+   ```
+3. Start Traefik + Gateway:
    ```bash
    docker-compose up
    ```
-3. Visit `http://localhost:8082/shell` to use the shell and navigate to different apps.
+4. Browse to [http://localhost:8082/shell](http://localhost:8082/shell).
 
-## Traefik Configuration
-### docker-compose.yml
-```yaml
-services:
-  traefik:
-    image: traefik:v1.7.34-alpine
-    ports:
-      - "8082:80"
-      - "8090:8080"
-    volumes:
-      - ./traefik.yml:/traefik/traefik.yml
-    extra_hosts:
-      - "host.docker.internal:host-gateway"
-```
+### Production Mode (Static Builds)
 
-### traefik.yml
-```yaml
-http:
-  routers:
-    shell:
-      rule: "PathPrefix(`/shell`)"
-      service: shell
-    angular-app:
-      rule: "PathPrefix(`/angular-app`)"
-      service: angular-app
-    react-app:
-      rule: "PathPrefix(`/react-app`)"
-      service: react-app   
-    vue-app:
-      rule: "PathPrefix(`/vue-app`)"
-      service: vue-app
-
-  services:
-    shell:
-      loadBalancer:
-        servers:
-          - url: "http://host.docker.internal:5000"
-    angular-app:
-      loadBalancer:
-        servers:
-          - url: "http://host.docker.internal:5001"
-    react-app:
-      loadBalancer:
-        servers:
-          - url: "http://host.docker.internal:5002"
-    vue-app:
-      loadBalancer:
-        servers:
-          - url: "http://host.docker.internal:5003"
-```
-
-## Known Limitations
-- Route synchronization between shell and micro apps is not implemented.
-- SEO and SSR are not fully supported in iframe-based setup.
-
-## Future Improvements
-- 🔄 Implement route sync using `postMessage` API between iframe and shell.
-- 🛡️ Auth token passing securely to child apps.
-- 📱 Responsive design.
-- 🧪 Add integration tests.
+1. Build all apps (see **Build Micro Apps** above).
+2. Set apps to `"static"` in `mode-config.json`.
+3. Start Traefik + Gateway:
+   ```bash
+   docker-compose up
+   ```
+4. Browse to [http://localhost:8082/shell](http://localhost:8082/shell).
 
 ---
 
-Feel free to fork and build upon this template!
+## Gateway Configuration
 
+The **Gateway** (Express.js) reads `mode-config.json` and for each route:
+
+- **Serve mode**: Proxies to `http://host.docker.internal:500X`.
+- **Static mode**: Serves files from `dist/[appName]/browser`, with SPA fallback.
+
+Example `apps/gateway/mode-config.json`:
+
+```json
+{
+  "shell": "static",
+  "angular-app": "serve",
+  "react-app": "static",
+  "vue-app": "serve"
+}
+```
+
+---
+
+## Traefik Configuration
+
+### docker-compose.yml
+
+```yaml
+version: '3.8'
+
+services:
+  traefik:
+    image: traefik:v2.10
+    command:
+      - '--api.insecure=true'
+      - '--providers.docker=false'
+      - '--entrypoints.web.address=:80'
+      - '--providers.file.directory=/traefik/'
+      - '--providers.file.watch=true'
+    ports:
+      - '8082:80' # User traffic
+      - '8090:8080' # Dashboard
+    volumes:
+      - ./traefik.yml:/traefik/traefik.yml
+    extra_hosts:
+      - 'host.docker.internal:host-gateway'
+
+  gateway:
+    build:
+      context: .
+      dockerfile: apps/gateway/Dockerfile
+    ports:
+      - '9000:9000'
+    extra_hosts:
+      - 'host.docker.internal:host-gateway'
+```
+
+### traefik.yml
+
+```yaml
+http:
+  routers:
+    gateway:
+      rule: |
+        PathPrefix(`/`) ||
+        PathPrefix(`/shell`) ||
+        PathPrefix(`/angular-app`) ||
+        PathPrefix(`/react-app`) ||
+        PathPrefix(`/vue-app`)
+      service: gateway
+      entryPoints:
+        - web
+
+  services:
+    gateway:
+      loadBalancer:
+        servers:
+          - url: 'http://gateway:9000'
+```
+
+---
+
+## Known Limitations
+
+- Route synchronization between shell and micro apps is not implemented.
+- SEO and SSR are not fully supported due to iframe-based architecture.
+
+---
+
+## Future Improvements
+
+- Sync routes between shell and iframe apps via `postMessage`.
+- Propagate auth tokens securely.
