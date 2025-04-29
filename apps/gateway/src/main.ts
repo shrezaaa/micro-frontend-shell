@@ -45,7 +45,7 @@ Object.keys(apps).forEach((name) => {
       createProxyMiddleware({
         target: apps[name].devUrl,
         changeOrigin: true,
-        pathRewrite: (p) => p.replace(new RegExp(`^/${name}`), ""),
+        // pathRewrite: (p) => p.replace(new RegExp(`^/${name}`), ""),
       })
     );
   }
