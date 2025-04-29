@@ -10,6 +10,7 @@
       "executor": "@angular-devkit/build-angular:application",
       "outputs": ["{options.outputPath}"],
       "options": {
+        "baseHref": "/angular-app/",
         "outputPath": "dist/angular-app",
         "index": "apps/angular-app/src/index.html",
         "browser": "apps/angular-app/src/main.ts",
@@ -51,6 +52,13 @@
     },
     "serve": {
       "executor": "@angular-devkit/build-angular:dev-server",
+      "options": {
+        "host": "0.0.0.0",
+        "publicHost": "localhost:5001",
+        "port": 5001,
+        "disableHostCheck": true,
+        "servePath": "/angular-app/"
+      },
       "configurations": {
         "production": {
           "buildTarget": "angular-app:build:production"

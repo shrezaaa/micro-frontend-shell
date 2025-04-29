@@ -1,0 +1,16 @@
+services:
+  traefik:
+    image: traefik:v2.10
+    command:
+      - "--api.insecure=true"
+      - "--providers.docker=false"
+      - "--entrypoints.web.address=:80"
+      - "--providers.file.directory=/traefik/"
+      - "--providers.file.watch=true"
+    ports:
+      - "8082:80"
+      - "8090:8080"
+    volumes:
+      - ./traefik.yml:/traefik/traefik.yml
+    extra_hosts:
+      - "host.docker.internal:host-gateway"

@@ -1,2 +1,18 @@
-<app-nx-welcome></app-nx-welcome>
-<router-outlet></router-outlet>
+<div class="shell-container">
+  <header class="shell-header">
+    <h3>Micro Frontend Shell</h3>
+    <nav class="shell-nav">
+      <a routerLink="./angular-app" routerLinkActive="active-link">Angular App</a>
+      <a routerLink="./react-app" routerLinkActive="active-link">React App</a>
+      <a routerLink="./vue-app" routerLinkActive="active-link">Vue App</a>
+    </nav>
+  </header>
+
+  <main class="shell-main">
+    <router-outlet></router-outlet>
+  </main>
+
+  <footer class="shell-footer">
+    <small>Shell © 2025</small>
+  </footer>
+</div>

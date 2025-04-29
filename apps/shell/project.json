@@ -10,6 +10,7 @@
       "executor": "@angular-devkit/build-angular:application",
       "outputs": ["{options.outputPath}"],
       "options": {
+        "baseHref": "/shell/",
         "outputPath": "dist/apps/shell",
         "index": "apps/shell/src/index.html",
         "browser": "apps/shell/src/main.ts",
@@ -51,6 +52,13 @@
     },
     "serve": {
       "executor": "@angular-devkit/build-angular:dev-server",
+      "options": {
+        "host": "0.0.0.0",
+        "publicHost": "localhost:5000",
+        "port": 5000,
+        "disableHostCheck": true,
+        "servePath": "/shell/"
+      },
       "configurations": {
         "production": {
           "buildTarget": "shell:build:production"
