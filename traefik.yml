@@ -1,53 +1,52 @@
-http:
-  routers:
-    shell:
-      rule: "PathPrefix(`/shell`)"
-      service: shell
-    angular-app:
-      rule: "PathPrefix(`/angular-app`)"
-      service: angular-app
-    react-app:
-      rule: "PathPrefix(`/react-app`)"
-      service: react-app   
-    vue-app:
-      rule: "PathPrefix(`/vue-app`)"
-      service: vue-app
-
-  services:
-    shell:
-      loadBalancer:
-        servers:
-          - url: "http://host.docker.internal:5000"
-    angular-app:
-      loadBalancer:
-        servers:
-          - url: "http://host.docker.internal:5001"
-    react-app:
-      loadBalancer:
-        servers:
-          - url: "http://host.docker.internal:5002"
-    vue-app:
-      loadBalancer:
-        servers:
-          - url: "http://host.docker.internal:5003"
-
-
-# traefik.yml
 # http:
 #   routers:
-#     gateway:
-#       rule: |
-#         PathPrefix(`/`) ||
-#         PathPrefix(`/shell`) ||
-#         PathPrefix(`/angular-app`) ||
-#         PathPrefix(`/react-app`) ||
-#         PathPrefix(`/vue-app`)
-#       service: gateway
-#       entryPoints:
-#         - web
+#     shell:
+#       rule: "PathPrefix(`/shell`)"
+#       service: shell
+#     angular-app:
+#       rule: "PathPrefix(`/angular-app`)"
+#       service: angular-app
+#     react-app:
+#       rule: "PathPrefix(`/react-app`)"
+#       service: react-app   
+#     vue-app:
+#       rule: "PathPrefix(`/vue-app`)"
+#       service: vue-app
 
 #   services:
-#     gateway:
+#     shell:
 #       loadBalancer:
 #         servers:
-#           - url: "http://gateway:9000"
+#           - url: "http://host.docker.internal:5000"
+#     angular-app:
+#       loadBalancer:
+#         servers:
+#           - url: "http://host.docker.internal:5001"
+#     react-app:
+#       loadBalancer:
+#         servers:
+#           - url: "http://host.docker.internal:5002"
+#     vue-app:
+#       loadBalancer:
+#         servers:
+#           - url: "http://host.docker.internal:5003"
+
+
+http:
+  routers:
+    gateway:
+      rule: |
+        PathPrefix(`/`) ||
+        PathPrefix(`/shell`) ||
+        PathPrefix(`/angular-app`) ||
+        PathPrefix(`/react-app`) ||
+        PathPrefix(`/vue-app`)
+      service: gateway
+      entryPoints:
+        - web
+
+  services:
+    gateway:
+      loadBalancer:
+        servers:
+          - url: "http://gateway:9000"

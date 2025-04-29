@@ -1,6 +1,6 @@
 {
   "shell": "static",
-  "angular-app": "serve",
-  "react-app": "serve",
+  "angular-app": "static",
+  "react-app": "static",
   "vue-app": "static"
 }

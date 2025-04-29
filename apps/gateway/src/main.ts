@@ -12,20 +12,19 @@ const app = express();
 app.use('/assets', express.static(path.join(__dirname, 'assets')));
 const PORT = 9000;
 
-// Map each app to its static path or dev URL:
-const apps = {
-  "shell":       { staticDir: path.join(__dirname, "../shell/browser"),       devUrl: "http://localhost:5000" },
-  "angular-app": { staticDir: path.join(__dirname, "../angular-app/browser"), devUrl: "http://localhost:5001" },
-  "react-app":   { staticDir: path.join(__dirname, "../react-app"),   devUrl: "http://localhost:5002" },
-  "vue-app":     { staticDir: path.join(__dirname, "../vue-app"),     devUrl: "http://localhost:5003" },
-};
-
 // const apps = {
-//   "shell":       { staticDir: path.join(__dirname, "../shell/browser"),       devUrl: "http://host.docker.internal:5000" },
-//   "angular-app": { staticDir: path.join(__dirname, "../angular-app/browser"), devUrl: "http://host.docker.internal:5001" },
-//   "react-app":   { staticDir: path.join(__dirname, "../react-app"),   devUrl: "http://host.docker.internal:5002" },
-//   "vue-app":     { staticDir: path.join(__dirname, "../vue-app"),     devUrl: "http://host.docker.internal:5003" },
+//   "shell":       { staticDir: path.join(__dirname, "../shell/browser"),       devUrl: "http://localhost:5000" },
+//   "angular-app": { staticDir: path.join(__dirname, "../angular-app/browser"), devUrl: "http://localhost:5001" },
+//   "react-app":   { staticDir: path.join(__dirname, "../react-app"),   devUrl: "http://localhost:5002" },
+//   "vue-app":     { staticDir: path.join(__dirname, "../vue-app"),     devUrl: "http://localhost:5003" },
 // };
+
+const apps = {
+  "shell":       { staticDir: path.join(__dirname, "../shell/browser"),       devUrl: "http://host.docker.internal:5000" },
+  "angular-app": { staticDir: path.join(__dirname, "../angular-app/browser"), devUrl: "http://host.docker.internal:5001" },
+  "react-app":   { staticDir: path.join(__dirname, "../react-app"),   devUrl: "http://host.docker.internal:5002" },
+  "vue-app":     { staticDir: path.join(__dirname, "../vue-app"),     devUrl: "http://host.docker.internal:5003" },
+};
 
 Object.keys(apps).forEach((name) => {
   const route = `/${name}`;
