@@ -39,7 +39,7 @@ Each app can run in one of two modes:
 - **Serve mode**: Gateway proxies requests to local development servers (e.g., `localhost:500X`).
 - **Static mode**: Gateway serves built static files from `dist/[appName]`.
 
-Modes are controlled via `apps/gateway/mode-config.json`:
+Modes are controlled via `app-mode-config.json`:
 
 ```json
 {
@@ -98,11 +98,11 @@ nx build vue-app
   /react-app
   /vue-app
   /gateway
-    mode-config.json
     Dockerfile
     main.ts
 /docker compose.yml
 /traefik.yml
+/app-mode-config.json
 ```
 
 ---
@@ -111,7 +111,7 @@ nx build vue-app
 
 ### Development Mode (Proxy Mode)
 
-1. Ensure `mode-config.json` has apps set to `"serve"`.
+1. Ensure `app-mode-config.json` has apps set to `"serve"`.
 2. Run apps locally:
    ```bash
    nx serve shell
@@ -128,7 +128,7 @@ nx build vue-app
 ### Production Mode (Static Builds)
 
 1. Build all apps (see **Build Micro Apps** above).
-2. Set apps to `"static"` in `mode-config.json`.
+2. Set apps to `"static"` in `app-mode-config.json`.
 3. Start Traefik + Gateway:
    ```bash
    docker compose up
@@ -139,12 +139,12 @@ nx build vue-app
 
 ## Gateway Configuration
 
-The **Gateway** (Express.js) reads `mode-config.json` and for each route:
+The **Gateway** (Express.js) reads `app-mode-config.json` and for each route:
 
 - **Serve mode**: Proxies to `http://host.docker.internal:500X`.
 - **Static mode**: Serves files from `dist/[appName]`, with SPA fallback.
 
-Example `apps/gateway/mode-config.json`:
+Example `app-mode-config.json`:
 
 ```json
 {

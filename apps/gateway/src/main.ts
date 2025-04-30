@@ -6,7 +6,7 @@
 import express from 'express';
 import { createProxyMiddleware } from 'http-proxy-middleware';
 import * as path from 'path';
-import config from './mode-config.json';
+import config from 'app-mode-config.json';
 
 const app = express();
 app.use('/assets', express.static(path.join(__dirname, 'assets')));
