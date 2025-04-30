@@ -14,3 +14,12 @@ services:
       - ./traefik.yml:/traefik/traefik.yml
     extra_hosts:
       - "host.docker.internal:host-gateway"
+
+  gateway:
+    build:
+      context: .
+      dockerfile: apps/gateway/Dockerfile
+    ports:
+      - "9000:9000"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
