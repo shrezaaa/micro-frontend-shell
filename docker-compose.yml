@@ -21,5 +21,13 @@ services:
       dockerfile: apps/gateway/Dockerfile
     ports:
       - "9000:9000"
+    environment:
+      APP_MODE_CONFIG: /app/app-mode-config.json
+    volumes:
+      - ./app-mode-config.json:/app/app-mode-config.json:ro
+      - ./dist/apps/shell:/app/dist/apps/shell:ro
+      - ./dist/apps/angular-app:/app/dist/apps/angular-app:ro
+      - ./dist/apps/react-app:/app/dist/apps/react-app:ro
+      - ./dist/apps/vue-app:/app/dist/apps/vue-app:ro
     extra_hosts:
       - "host.docker.internal:host-gateway"

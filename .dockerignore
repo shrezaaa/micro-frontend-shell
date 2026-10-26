@@ -1,0 +1,17 @@
+# Files Docker should NOT send into the build.
+# Smaller context = faster builds, and no Mac-only binaries end up in the Linux image.
+node_modules
+dist
+tmp
+out-tsc
+coverage
+.git
+.nx
+.angular
+.vscode
+.idea
+.claude
+graphify-out
+docs
+.DS_Store
+*.log
