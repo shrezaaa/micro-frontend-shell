@@ -22,6 +22,12 @@ export default defineConfig(() => ({
   // worker: {
   //  plugins: [ nxViteTsPaths() ],
   // },
+  test: {
+    watch: false,
+    globals: true,
+    environment: 'jsdom',
+    include: ['src/**/*.spec.ts'],
+  },
   build: {
     outDir: '../../dist/apps/vue-app',
     emptyOutDir: true,

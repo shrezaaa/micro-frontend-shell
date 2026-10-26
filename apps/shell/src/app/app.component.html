@@ -2,15 +2,33 @@
   <header class="shell-header">
     <h3>Micro Frontend Shell</h3>
     <nav class="shell-nav">
-      <a routerLink="./angular-app" routerLinkActive="active-link">Angular App</a>
-      <a routerLink="./react-app" routerLinkActive="active-link">React App</a>
-      <a routerLink="./vue-app" routerLinkActive="active-link">Vue App</a>
+      @for (app of apps; track app.name) {
+      <a [routerLink]="'/' + app.name" routerLinkActive="active-link">{{ app.label }}</a>
+      }
     </nav>
+    <button class="theme-toggle" (click)="host.toggleTheme()">
+      {{ host.context().theme === 'light' ? '🌙 Dark' : '☀️ Light' }}
+    </button>
   </header>
 
-  <main class="shell-main">
-    <router-outlet></router-outlet>
-  </main>
+  <div class="shell-body">
+    <main class="shell-main">
+      <router-outlet></router-outlet>
+    </main>
+
+    <aside class="shell-events">
+      <h4>Events from micro apps</h4>
+      @for (e of host.events(); track $index) {
+      <div class="event">
+        <small>{{ e.at | date: 'HH:mm:ss' }} · {{ e.from }}</small>
+        <strong>{{ e.name }}</strong>
+        <code>{{ e.data | json }}</code>
+      </div>
+      } @empty {
+      <small class="empty">Nothing yet. Click a button inside a micro app.</small>
+      }
+    </aside>
+  </div>
 
   <footer class="shell-footer">
     <small>Shell © 2025</small>

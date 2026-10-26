@@ -5,19 +5,17 @@
 
 import express from 'express';
 import { createProxyMiddleware } from 'http-proxy-middleware';
+import * as fs from 'fs';
 import * as path from 'path';
-import config from 'app-mode-config.json';
+
+type Mode = 'serve' | 'static';
+const configPath =
+  process.env.APP_MODE_CONFIG ?? path.join(process.cwd(), 'app-mode-config.json');
+const config: Record<string, Mode> = JSON.parse(fs.readFileSync(configPath, 'utf-8'));
 
 const app = express();
 app.use('/assets', express.static(path.join(__dirname, 'assets')));
-const PORT = 9000;
-
-// const apps = {
-//   "shell":       { staticDir: path.join(__dirname, "../shell/browser"),       devUrl: "http://localhost:5000" },
-//   "angular-app": { staticDir: path.join(__dirname, "../angular-app/browser"), devUrl: "http://localhost:5001" },
-//   "react-app":   { staticDir: path.join(__dirname, "../react-app"),   devUrl: "http://localhost:5002" },
-//   "vue-app":     { staticDir: path.join(__dirname, "../vue-app"),     devUrl: "http://localhost:5003" },
-// };
+const PORT = Number(process.env.PORT ?? 9000);
 
 const apps = {
   "shell":       { staticDir: path.join(__dirname, "../shell/browser"),       devUrl: "http://host.docker.internal:5000" },
@@ -26,7 +24,7 @@ const apps = {
   "vue-app":     { staticDir: path.join(__dirname, "../vue-app"),     devUrl: "http://host.docker.internal:5003" },
 };
 
-Object.keys(apps).forEach((name) => {
+(Object.keys(apps) as (keyof typeof apps)[]).forEach((name) => {
   const route = `/${name}`;
   const mode  = config[name];
 
@@ -44,12 +42,12 @@ Object.keys(apps).forEach((name) => {
       createProxyMiddleware({
         target: apps[name].devUrl,
         changeOrigin: true,
-        // pathRewrite: (p) => p.replace(new RegExp(`^/${name}`), ""),
+        ws: true,
       })
     );
   }
 });
 
 app.listen(PORT, () => {
-  console.log(`Gateway listening on http://localhost:${PORT}`);
+  console.log(`Gateway listening on http://localhost:${PORT}`, config);
 });

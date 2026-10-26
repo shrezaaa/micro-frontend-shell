@@ -6,3 +6,21 @@
 body {
   margin: 0;
 }
+
+:root {
+  --shell-bg: #ffffff;
+  --shell-fg: #222222;
+  --shell-surface: #f5f5f5;
+  --shell-border: #dddddd;
+  --shell-active: #e0e0e0;
+  --shell-muted: #888888;
+}
+
+:root[data-theme='dark'] {
+  --shell-bg: #16181d;
+  --shell-fg: #e8e8e8;
+  --shell-surface: #1f2229;
+  --shell-border: #343843;
+  --shell-active: #2e323c;
+  --shell-muted: #9aa0aa;
+}

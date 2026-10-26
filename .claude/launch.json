@@ -1,0 +1,12 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "gateway",
+      "runtimeExecutable": "node",
+      "runtimeArgs": ["dist/apps/gateway/main.js"],
+      "env": { "PORT": "9100" },
+      "port": 9100
+    }
+  ]
+}

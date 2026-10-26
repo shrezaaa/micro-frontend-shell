@@ -1,0 +1,18 @@
+nav {
+  display: flex;
+  gap: 12px;
+  padding: 12px 20px;
+  border-bottom: 1px solid var(--border);
+
+  a {
+    color: var(--accent);
+
+    &.active {
+      font-weight: bold;
+    }
+  }
+}
+
+main {
+  padding: 20px;
+}

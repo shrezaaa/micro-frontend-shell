@@ -1,44 +1,37 @@
 <script setup lang="ts">
 import { RouterLink, RouterView } from 'vue-router';
+
+const embedded = window.parent !== window;
 </script>
 
 <template>
-  <header>
-    <nav>
-      <RouterLink to="/">Home</RouterLink>
-      <RouterLink to="/about">About</RouterLink>
-    </nav>
-  </header>
-  <RouterView />
+  <nav>
+    <RouterLink to="/">Home</RouterLink>
+    <RouterLink to="/about">About</RouterLink>
+    <small v-if="!embedded">(standalone)</small>
+  </nav>
+  <main>
+    <RouterView />
+  </main>
 </template>
 
 <style scoped lang="scss">
-header {
-  line-height: 1.5;
-  max-width: 100vw;
-}
+nav {
+  display: flex;
+  gap: 12px;
+  padding: 12px 20px;
+  border-bottom: 1px solid var(--border);
 
-nav > a {
-  padding-left: 1rem;
-  padding-right: 1rem;
-}
-
-@media (min-width: 768px) {
-  header {
-    display: flex;
-    place-items: center;
-    padding-right: calc(var(--section-gap) / 2);
-    margin-left: auto;
-    margin-right: auto;
-    max-width: 768px;
+  a {
+    color: var(--accent);
   }
 
-  nav {
-    text-align: left;
-    font-size: 1rem;
-
-    padding: 1rem 0;
-    margin-top: 1rem;
+  .router-link-exact-active {
+    font-weight: bold;
   }
+}
+
+main {
+  padding: 20px;
 }
 </style>

@@ -1,9 +1,13 @@
 <script setup lang="ts">
-import NxWelcome from '../app/NxWelcome.vue';
+import { inject } from 'vue';
+import type { RemoteBridge } from '@mfe/bridge';
+import { shellContext } from '../mfe-bridge';
+
+const bridge = inject<RemoteBridge>('bridge');
 </script>
 
 <template>
-  <main>
-    <NxWelcome title="vue-app" />
-  </main>
+  <h2>Vue · Home</h2>
+  <p>Hello {{ shellContext?.user?.name ?? 'stranger' }}.</p>
+  <button @click="bridge?.emit('vue:liked', { count: 1 })">Emit event to shell</button>
 </template>
